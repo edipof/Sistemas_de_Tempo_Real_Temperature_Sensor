@@ -17,7 +17,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
 
         private CyclicExecutive m_CyclicExecutive = new CyclicExecutive();
         private ucTemperatureSensor m_ucTemperatureSensor = new ucTemperatureSensor();
-
+  
         //public delegate TemperatureSensorEventHandler();
         #endregion
 
