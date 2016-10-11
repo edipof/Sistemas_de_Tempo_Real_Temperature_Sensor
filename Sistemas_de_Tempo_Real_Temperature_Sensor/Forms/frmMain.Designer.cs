@@ -88,6 +88,7 @@
             this.m_BtnGasDown.TabIndex = 1;
             this.m_BtnGasDown.Text = "- Pressão";
             this.m_BtnGasDown.UseVisualStyleBackColor = true;
+            this.m_BtnGasDown.Click += new System.EventHandler(this.m_BtnGasDown_Click);
             // 
             // m_BtnGasUp
             // 
@@ -97,6 +98,7 @@
             this.m_BtnGasUp.TabIndex = 0;
             this.m_BtnGasUp.Text = "+ Pressão";
             this.m_BtnGasUp.UseVisualStyleBackColor = true;
+            this.m_BtnGasUp.Click += new System.EventHandler(this.m_BtnGasUp_Click);
             // 
             // m_lblPressaoGas
             // 

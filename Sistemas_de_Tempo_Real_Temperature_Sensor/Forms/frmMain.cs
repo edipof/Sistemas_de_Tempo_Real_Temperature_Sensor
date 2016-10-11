@@ -26,7 +26,6 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         Thread producao;
         Thread gas;
 
-
         static long m_Temperatura = 500;
         static long m_Produtos = 1;
         static readonly object getTemperaturaLock = new object();
@@ -117,6 +116,16 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
             //Thread.Sleep(Timeout.Infinite);
         }
 
+        private void m_BtnGasUp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void m_BtnGasDown_Click(object sender, EventArgs e)
+        {
+
+        }
+
         #endregion
 
         #region Methods
@@ -134,6 +143,6 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         }
 
         #endregion
-
+      
     }
 }
