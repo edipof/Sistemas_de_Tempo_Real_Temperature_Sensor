@@ -37,7 +37,7 @@
             this.m_LblTemperature.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.m_LblTemperature.Font = new System.Drawing.Font("Microsoft Sans Serif", 50F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.m_LblTemperature.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.m_LblTemperature.Location = new System.Drawing.Point(21, 40);
+            this.m_LblTemperature.Location = new System.Drawing.Point(53, 62);
             this.m_LblTemperature.Name = "m_LblTemperature";
             this.m_LblTemperature.Size = new System.Drawing.Size(596, 76);
             this.m_LblTemperature.TabIndex = 0;
@@ -48,9 +48,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Controls.Add(this.m_LblTemperature);
             this.Name = "ucTemperatureSensor";
-            this.Size = new System.Drawing.Size(225, 195);
+            this.Size = new System.Drawing.Size(223, 193);
             this.Load += new System.EventHandler(this.ucTemperatureSensor_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

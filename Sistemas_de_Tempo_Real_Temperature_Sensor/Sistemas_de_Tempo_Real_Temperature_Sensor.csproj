@@ -59,6 +59,12 @@
     <Compile Include="Forms\TemperatureSensor.Designer.cs">
       <DependentUpon>TemperatureSensor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\ucGas.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\ucGas.Designer.cs">
+      <DependentUpon>ucGas.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ucProductLine.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -78,6 +84,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TemperatureSensor.resx">
       <DependentUpon>TemperatureSensor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ucGas.resx">
+      <DependentUpon>ucGas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ucProductLine.resx">
+      <DependentUpon>ucProductLine.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ucTemperatureSensor.resx">
       <DependentUpon>ucTemperatureSensor.cs</DependentUpon>

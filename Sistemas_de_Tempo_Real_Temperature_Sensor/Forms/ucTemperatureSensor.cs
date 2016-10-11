@@ -36,7 +36,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
 
         private void ucTemperatureSensor_Load(object sender, EventArgs e)
         {
-
+            Dock = DockStyle.Fill;
         }
 
     }
