@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Sistemas_de_Tempo_Real_Temperature_Sensor.Classes;
 using System.Threading;
 using static Sistemas_de_Tempo_Real_Temperature_Sensor.Forms.ucTemperatureSensor;
+using static Sistemas_de_Tempo_Real_Temperature_Sensor.Forms.ucGas;
 
 namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
 {
@@ -17,19 +18,39 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
     {
         #region Members
 
+        #region UserControl
         private CyclicExecutive m_CyclicExecutive = new CyclicExecutive();
         private ucTemperatureSensor m_ucTemperatureSensor = new ucTemperatureSensor();
         private ucProductLine m_ucProductLine = new ucProductLine();
         private ucGas m_ucGas = new ucGas();
+        #endregion
 
-        Thread sensor;
-        Thread producao;
-        Thread gas;
+        #region Thread
+        private Thread ThreadSensor;
+        private Thread ThreadProducao;
+        private Thread ThreadGas;
+        #endregion
 
-        static long m_Temperatura = 500;
-        static long m_Produtos = 1;
-        static readonly object getTemperaturaLock = new object();
-        static readonly object setTemperaturaLock = new object();
+        #region Lock
+        private static readonly object getTemperaturaLock = new object();
+        private static readonly object setTemperaturaLock = new object();
+        private static readonly object getPressaoLock = new object();
+        private static readonly object setPressaoLock = new object();
+        private static readonly object getProdutosLock = new object();
+        private static readonly object setProdutosLock = new object();
+        #endregion
+
+        #region Timer
+        private int m_TempoProducao = 2000;
+        private int m_TempoPressao = 10000;
+        private int m_TempoTemperatura = 10000;
+        #endregion
+
+        #region Count
+        private static long m_Temperatura = 500;
+        private static long m_Produtos = 0;
+        private static long m_Pression = 0;
+        #endregion
 
         #endregion
 
@@ -43,7 +64,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
                 {
                     if (m_Temperatura == 505)
                     {
-                        sensor.Interrupt();
+                        ThreadSensor.Interrupt();
                     }
                     return m_Temperatura;
                 }
@@ -55,6 +76,83 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
                 {
                     m_Temperatura += value;
                 }
+            }
+        }
+
+        public static long Produtos
+        {
+            get
+            {
+                lock (getProdutosLock)
+                {
+                    return m_Produtos;
+                }
+            }
+
+            set
+            {
+                lock (setProdutosLock)
+                {
+                    m_Produtos += value;
+                }
+            }
+        }
+
+        public static long Pressao
+        {
+            get
+            {
+                lock (getPressaoLock)
+                {
+                    return m_Pression;
+                }
+            }
+
+            set
+            {
+                lock (setPressaoLock)
+                {
+                    m_Pression += value;
+                }
+            }
+        }
+
+        public int TempoProducao
+        {
+            get
+            {
+                return m_TempoProducao;
+            }
+
+            set
+            {
+                m_TempoProducao += value;
+            }
+        }
+
+        public int TempoPressao
+        {
+            get
+            {
+                return m_TempoPressao;
+            }
+
+            set
+            {
+                m_TempoPressao += value;
+            }
+        }
+
+        public int TempoTemperatura
+        {
+            get
+            {
+                return m_TempoTemperatura;
+            }
+
+            set
+            {
+                m_TempoTemperatura += value;
             }
         }
 
@@ -74,66 +172,137 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
 
         private void atualizaThreadSensor()
         {
-            int count = 0;
+            m_ucTemperatureSensor.setValorInicialTemperatureSensor();
+
             while (true)
             {
-                count++;
-                Thread.Sleep(1000);
+                Temperatura = 1;
+
+                Thread.Sleep(TempoTemperatura);
                 if (m_ucTemperatureSensor.InvokeRequired)
                 {
-                    this.Invoke(new TemperatureSensorEventHandler(setLabel1), new object[] { count.ToString() + " ° C" });
+                    this.Invoke(new TemperatureSensorEventHandler(m_ucTemperatureSensor.setLabelTemperature),
+                        new object[] { Temperatura.ToString() + " ° C" });
                 }
                 else
                 {
-                    m_ucTemperatureSensor.TemperatureLabel = count.ToString();
+                    m_ucTemperatureSensor.TemperatureLabel = Temperatura.ToString();
                 }
             }
         }
 
         private void atualizaThreadGas()
         {
-
+            m_ucGas.setValorInicialPressao();
+            while (true)
+            {
+                Pressao = 1;
+                Thread.Sleep(TempoPressao);
+                if (m_ucGas.InvokeRequired)
+                {
+                    this.Invoke(new PressiaoControlEventHandler(m_ucGas.setLabelPressao),
+                        new object[] { "Pressão  " + Pressao.ToString() });
+                }
+                else
+                {
+                    m_ucGas.PressaoLabel = Pressao.ToString();
+                }
+            }
         }
 
         private void atualizaThreadLinhaProducao()
         {
-
+            while (true)
+            {
+                Produtos = 1;
+                Thread.Sleep(TempoProducao);
+                if (m_ucProductLine.InvokeRequired)
+                {
+                    this.Invoke(new TemperatureSensorEventHandler(m_ucProductLine.setLabelProductLine),
+                        new object[] { "Quantidade produzida  " + Produtos.ToString() });
+                }
+                else
+                {
+                    m_ucProductLine.ProductLabel = Produtos.ToString();
+                }
+            }
         }
 
         private void m_BtnIniciar_Click(object sender, EventArgs e)
         {
-            sensor = new Thread(atualizaThreadSensor);
-            producao = new Thread(atualizaThreadGas);
-            gas = new Thread(atualizaThreadLinhaProducao);
+            ThreadSensor = new Thread(atualizaThreadSensor);
+            ThreadProducao = new Thread(atualizaThreadGas);
+            ThreadGas = new Thread(atualizaThreadLinhaProducao);
 
-            sensor.Start();
-            producao.Start();
-            gas.Start();
+            ThreadSensor.Start();
+            ThreadProducao.Start();
+            ThreadGas.Start();
         }
 
         private void m_BtnDesligar_Click(object sender, EventArgs e)
         {
-            //Thread.Sleep(Timeout.Infinite);
+            try
+            {
+                //sensor.Interrupt();
+                //producao.Interrupt();
+                //gas.Interrupt();
+            }
+            catch
+            {
+
+            }
         }
 
         private void m_BtnGasUp_Click(object sender, EventArgs e)
         {
+            Temperatura = 50;
+            Pressao = 100;
+            TempoProducao = 1000;
+
+            if (m_ucProductLine.InvokeRequired)
+            {
+                this.Invoke(new TemperatureSensorEventHandler(m_ucProductLine.setLabelProductLine),
+                    new object[] { "Quantidade produzida  " + Produtos.ToString() });
+            }
+            if (m_ucGas.InvokeRequired)
+            {
+                this.Invoke(new PressiaoControlEventHandler(m_ucGas.setLabelPressao),
+                    new object[] { "Pressão  " + Pressao.ToString() });
+            }
+            if (m_ucTemperatureSensor.InvokeRequired)
+            {
+                this.Invoke(new TemperatureSensorEventHandler(m_ucTemperatureSensor.setLabelTemperature),
+                    new object[] { Temperatura.ToString() + " ° C" });
+            }
 
         }
 
         private void m_BtnGasDown_Click(object sender, EventArgs e)
         {
+            Temperatura = -50;
+            Pressao = -100;
+            TempoProducao = -1000;
 
+            if (m_ucProductLine.InvokeRequired)
+            {
+                this.Invoke(new TemperatureSensorEventHandler(m_ucProductLine.setLabelProductLine),
+                    new object[] { "Quantidade produzida  " + Produtos.ToString() });
+            }
+            if (m_ucGas.InvokeRequired)
+            {
+                this.Invoke(new PressiaoControlEventHandler(m_ucGas.setLabelPressao),
+                    new object[] { "Pressão  " + Pressao.ToString() });
+            }
+            if (m_ucTemperatureSensor.InvokeRequired)
+            {
+                this.Invoke(new TemperatureSensorEventHandler(m_ucTemperatureSensor.setLabelTemperature),
+                    new object[] { Temperatura.ToString() + " ° C" });
+            }
         }
 
         #endregion
 
         #region Methods
-
-        private void setLabel1(string e)
-        {
-            m_ucTemperatureSensor.TemperatureLabel = e;
-        }
 
         private void initializeUserControls()
         {
@@ -143,6 +312,6 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         }
 
         #endregion
-      
+
     }
 }

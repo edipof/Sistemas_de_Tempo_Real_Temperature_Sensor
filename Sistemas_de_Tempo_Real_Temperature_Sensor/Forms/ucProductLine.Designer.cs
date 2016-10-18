@@ -34,12 +34,12 @@
             // m_LblProductLine
             // 
             this.m_LblProductLine.AutoSize = true;
-            this.m_LblProductLine.BackColor = System.Drawing.SystemColors.Control;
-            this.m_LblProductLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 50F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.m_LblProductLine.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.m_LblProductLine.Font = new System.Drawing.Font("Microsoft Sans Serif", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.m_LblProductLine.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.m_LblProductLine.Location = new System.Drawing.Point(3, 82);
             this.m_LblProductLine.Name = "m_LblProductLine";
-            this.m_LblProductLine.Size = new System.Drawing.Size(570, 76);
+            this.m_LblProductLine.Size = new System.Drawing.Size(292, 39);
             this.m_LblProductLine.TabIndex = 1;
             this.m_LblProductLine.Text = "m_LblProductLine";
             // 
@@ -47,6 +47,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Controls.Add(this.m_LblProductLine);
             this.Name = "ucProductLine";
