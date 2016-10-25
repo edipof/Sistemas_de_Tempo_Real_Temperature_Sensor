@@ -31,14 +31,14 @@
             this.m_LblPressao = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // m_LblPression
+            // m_LblPressao
             // 
             this.m_LblPressao.AutoSize = true;
             this.m_LblPressao.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.m_LblPressao.Font = new System.Drawing.Font("Microsoft Sans Serif", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.m_LblPressao.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.m_LblPressao.Location = new System.Drawing.Point(3, 73);
-            this.m_LblPressao.Name = "m_LblPression";
+            this.m_LblPressao.Location = new System.Drawing.Point(3, 0);
+            this.m_LblPressao.Name = "m_LblPressao";
             this.m_LblPressao.Size = new System.Drawing.Size(243, 39);
             this.m_LblPressao.TabIndex = 2;
             this.m_LblPressao.Text = "m_LblPression";

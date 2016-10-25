@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
 {
@@ -15,6 +16,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         #region Members
 
         public delegate void ProductLineEventHandler(string text);
+        public delegate void ChartEventHandler(List<DataChart> p_DataChart);
 
         #endregion
 
@@ -59,6 +61,21 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         public void setLabelProductLine(string e)
         {
             ProductLabel = e;
+        }
+
+        public void updateChart(List<DataChart> p_DataChart)
+        {
+            chartProduct.Controls.Clear();
+            chartProduct.Series.Clear();
+            chartProduct.Titles.Clear();
+            
+            chartProduct.Titles.Add("Produção");
+
+            foreach (DataChart XY in p_DataChart.Distinct())
+            {
+                Series serie = chartProduct.Series.Add(XY.X.ToString());
+                serie.Points.Add(Convert.ToDouble(XY.Y));
+            }
         }
 
         #endregion

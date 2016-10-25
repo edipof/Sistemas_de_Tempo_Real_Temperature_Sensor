@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Threading;
 using static Sistemas_de_Tempo_Real_Temperature_Sensor.Forms.ucTemperatureSensor;
 using static Sistemas_de_Tempo_Real_Temperature_Sensor.Forms.ucGas;
+using static Sistemas_de_Tempo_Real_Temperature_Sensor.Forms.ucProductLine;
 
 namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
 {
@@ -17,16 +18,22 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
     {
         #region Members
 
+        private static bool m_SistemaOn = false;
+        private DataChart produtosChart = new DataChart();
+        private static int valorProdutosPorSegundo = 0;
+
         #region UserControl
         private ucTemperatureSensor m_ucTemperatureSensor = new ucTemperatureSensor();
         private ucProductLine m_ucProductLine = new ucProductLine();
         private ucGas m_ucGas = new ucGas();
+        private ucAlert m_ucAlert = new ucAlert();
         #endregion
 
         #region Thread
         private Thread ThreadSensor;
         private Thread ThreadProducao;
         private Thread ThreadGas;
+        private Thread ThreadGraficos;
         #endregion
 
         #region Lock
@@ -45,9 +52,9 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         #endregion
 
         #region Count
-        private static long m_Temperatura = 500;
-        private static long m_Produtos = 0;
-        private static long m_Pression = 0;
+        private static int m_Temperatura = 500;
+        private static int m_Produtos = 0;
+        private static int m_Pression = 0;
         #endregion
 
         #endregion
@@ -55,12 +62,18 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         #region Properties
         //Metodos Get e Set
 
-        public long Temperatura
+        public int Temperatura
         {
             get
             {
                 lock (getTemperaturaLock)
                 {
+                    setCoresPainelAlerta();
+
+                    //if (m_Temperatura > 1000)
+                    //{
+                    //    MessageBox.Show("Temperatura Maxima aceitável atingida");
+                    //}
                     return m_Temperatura;
                 }
             }
@@ -74,7 +87,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
             }
         }
 
-        public static long Produtos
+        public static int Produtos
         {
             get
             {
@@ -93,7 +106,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
             }
         }
 
-        public static long Pressao
+        public static int Pressao
         {
             get
             {
@@ -121,7 +134,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
 
             set
             {
-                m_TempoProducao = (m_TempoProducao + value <= 0 ? 1000 : m_TempoProducao + value);
+                m_TempoProducao = (m_TempoProducao + value <= 0 ? 100 : m_TempoProducao + value);
             }
         }
 
@@ -167,13 +180,22 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
 
         private void m_BtnIniciar_Click(object sender, EventArgs e)
         {
-            ThreadSensor = new Thread(atualizaThreadSensor);
-            ThreadProducao = new Thread(atualizaThreadGas);
-            ThreadGas = new Thread(atualizaThreadLinhaProducao);
+            if (!m_SistemaOn)
+            {
+                setCoresPainelAlerta();
 
-            ThreadSensor.Start();
-            ThreadProducao.Start();
-            ThreadGas.Start();
+                ThreadProducao = new Thread(atualizaThreadGas);
+                ThreadGas = new Thread(atualizaThreadLinhaProducao);
+                ThreadSensor = new Thread(atualizaThreadSensor);
+                ThreadGraficos = new Thread(atualizaGraficos);
+
+                ThreadSensor.Start();
+                ThreadProducao.Start();
+                ThreadGas.Start();
+                ThreadGraficos.Start();
+
+                m_SistemaOn = true;
+            }
         }
 
         private void m_BtnDesligar_Click(object sender, EventArgs e)
@@ -194,7 +216,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         {//Main Thread
             Temperatura = 50;
             Pressao = 100;
-            TempoProducao = -1000;
+            TempoProducao = -100;
 
             invokeSensor();
             invokePressao();
@@ -205,7 +227,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         {//Main Thread
             Temperatura = -50;
             Pressao = -100;
-            TempoProducao = +1000;
+            TempoProducao = +100;
 
             invokeSensor();
             invokePressao();
@@ -221,6 +243,24 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
             m_TemperaturePanel.Controls.Add(m_ucTemperatureSensor);
             m_PressionPanel.Controls.Add(m_ucGas);
             m_ProductLinePanel.Controls.Add(m_ucProductLine);
+            m_PanelAlert.Controls.Add(m_ucAlert);
+        }
+
+        private void setCoresPainelAlerta()
+        {
+            if (m_Temperatura > 0 && m_Temperatura <= 799)
+            {
+                m_ucAlert.setColor(Color.FromArgb(38, 255, 0));
+            }
+            else if (m_Temperatura > 799 && m_Temperatura < 1000)
+            {
+                m_ucAlert.setColor(Color.Yellow);
+            }
+            else if (m_Temperatura >= 1000)
+            {
+                m_ucAlert.setColor(Color.Red);
+                produtosChart.getFilteredList();
+            }
         }
 
         //Threads Individuais
@@ -252,12 +292,26 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         {
             while (true)
             {
-                Produtos = 1;
                 Thread.Sleep(TempoProducao);
+                Produtos = 1;
                 invokeProducao();
             }
         }
 
+        private void atualizaGraficos()
+        {
+            while(true)
+            {
+                Thread.Sleep(1000);
+                valorProdutosPorSegundo = Produtos - valorProdutosPorSegundo;
+                produtosChart.add(valorProdutosPorSegundo, DateTime.Now);
+                if (m_ucProductLine.InvokeRequired && produtosChart.ListXY != null)
+                {
+                    Invoke (new ChartEventHandler(m_ucProductLine.updateChart), 
+                        new object[] {produtosChart.getFilteredList() });
+                }
+            }
+        }
         //Metodos compartilhados pelas Threads (main thread e threads secundarias)
         private void invokePressao()
         {
@@ -268,7 +322,7 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
             }
             else
             {
-                m_ucGas.PressaoLabel = "Pressão  " + Pressao.ToString();
+                m_ucGas.setLabelPressao("Pressão  " + Pressao.ToString());
             }
         }
 
@@ -281,8 +335,10 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
             }
             else
             {
-                m_ucProductLine.ProductLabel = "Quantidade produzida  " + Produtos.ToString();
+                m_ucProductLine.setLabelProductLine("Quantidade produzida  " + Produtos.ToString());
             }
+
+           
         }
 
         private void invokeSensor()
@@ -299,6 +355,80 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         }
 
         #endregion
-
     }
+
+    public class DataChart
+    {
+        private int y;
+        private DateTime x;
+        private List<DataChart> listXY = new List<DataChart>();
+
+        public DataChart() { }
+
+        public DataChart(int Y, DateTime X)
+        {
+            this.Y = Y;
+            this.X = X;
+        }
+
+       
+
+        public List<DataChart> ListXY
+        {
+            get
+            {
+                return listXY;
+            }
+
+            set
+            {
+                listXY = value;
+            }
+        }
+
+        public int Y
+        {
+            get
+            {
+                return y;
+            }
+
+            set
+            {
+                y = value;
+            }
+        }
+
+        public DateTime X
+        {
+            get
+            {
+                return x;
+            }
+
+            set
+            {
+                x = value;
+            }
+        }
+
+        public void add(int Y, DateTime X)
+        {
+            ListXY.Add(new DataChart(Y, X));
+        }
+
+        public List<DataChart> getFilteredList()
+        {
+            List<DataChart> filtredList = ListXY
+                .GroupBy(sec => sec.X.Second)
+                .Select(p => new DataChart
+                {
+                    X = p.First().X,
+                    Y = Convert.ToInt32(p.Sum(g => g.Y)),
+                }).ToList();
+
+            return filtredList;
+        }
+    }
+
 }

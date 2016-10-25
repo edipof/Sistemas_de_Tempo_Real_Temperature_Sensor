@@ -66,9 +66,9 @@ namespace Sistemas_de_Tempo_Real_Temperature_Sensor.Forms
         {
             if (InvokeRequired)
             {
-                Invoke(new PressiaoControlEventHandler(setLabelPressao), new object[] { 0.ToString()});
+                Invoke(new PressiaoControlEventHandler(setLabelPressao), new object[] { "Pressão  " + 0.ToString()});
                 Thread.Sleep(100);
-                this.Invoke(new PressiaoControlEventHandler(setLabelPressao), new object[] { 100.ToString() + " ° C" });
+                this.Invoke(new PressiaoControlEventHandler(setLabelPressao), new object[] { "Pressão  " + 100.ToString()});
             }
         }
 

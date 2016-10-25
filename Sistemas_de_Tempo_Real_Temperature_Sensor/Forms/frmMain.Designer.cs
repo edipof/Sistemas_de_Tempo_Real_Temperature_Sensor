@@ -39,7 +39,7 @@
             this.m_lblLinhaProducao = new System.Windows.Forms.Label();
             this.m_BtnDesligar = new System.Windows.Forms.Button();
             this.m_BtnIniciar = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.m_PanelAlert = new System.Windows.Forms.Panel();
             this.m_BbxControls.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -148,21 +148,21 @@
             this.m_BtnIniciar.UseVisualStyleBackColor = true;
             this.m_BtnIniciar.Click += new System.EventHandler(this.m_BtnIniciar_Click);
             // 
-            // panel1
+            // m_PanelAlert
             // 
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel1.Location = new System.Drawing.Point(357, 65);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(109, 64);
-            this.panel1.TabIndex = 1;
+            this.m_PanelAlert.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.m_PanelAlert.Location = new System.Drawing.Point(351, 51);
+            this.m_PanelAlert.Name = "m_PanelAlert";
+            this.m_PanelAlert.Size = new System.Drawing.Size(133, 73);
+            this.m_PanelAlert.TabIndex = 1;
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(938, 400);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.m_PanelAlert);
             this.Controls.Add(this.m_BtnIniciar);
             this.Controls.Add(this.m_BtnDesligar);
             this.Controls.Add(this.m_lblLinhaProducao);
@@ -193,6 +193,6 @@
         private System.Windows.Forms.Button m_BtnGasUp;
         private System.Windows.Forms.Button m_BtnDesligar;
         private System.Windows.Forms.Button m_BtnIniciar;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel m_PanelAlert;
     }
 }
